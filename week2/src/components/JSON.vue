@@ -10,7 +10,7 @@
       <h3>Iterating through Arrays</h3>
       <!-- Activity 6: Render a list containing author names and their birth years. Hint: Make use of the v-for directive to iterate through the array of authors. -->
       <ul>
-        <li v-for="author in authors" :key="author.id">
+        <li v-for="author in authors" :key="author.id" :class="{ highlight: author.name === 'George Orwell' }">
           {{ author.name }} ({{ author.birthYear }})
         </li>
       </ul>
@@ -20,7 +20,7 @@
       <!-- Activity 7: Render a list containing authors born after 1850. Hint: Make use of the v-for directive to iterate through the array of authors that you have filtered out. -->
       <p>Authors born after 1850:</p>
       <ul>
-        <li v-for="author in modernAuthors" :key="author.id">
+        <li v-for="author in modernAuthors" :key="author.id" :class="{ highlight: author.name === 'George Orwell' }">
           {{ author.name }} ({{ author.birthYear }})
         </li>
       </ul>
@@ -36,8 +36,12 @@
       
 
       <h3>Finding in Arrays</h3>
-      <p>Finding by property: {{ orwell?.name }}</p>
-
+      <p>Finding by property: 
+        <span :class="{ highlight: orwell?.name === 'George Orwell' }">
+          {{ orwell?.name }}
+        </span>
+      </p>
+      
       <h3>Nested Arrays/Objects</h3>
       <p>{{ austen?.name }}'s works:</p>
       <!-- Activity 9: Render a list of Austen's works. Hint: Use the v-for directive to iterate through the array of authors that you have filtered out. -->
@@ -71,7 +75,11 @@
           {{ type }}: {{ count }}
         </li>
       </ul>
-
+      <!-- <ul>
+        <li v-for="author in authors" :key="author.id" >
+          {{ author.name }} ({{ author.birthYear }})
+        </li>
+      </ul> -->
 
       <h3>Nested Objects</h3>
       <p>Opening Hours:</p>
@@ -183,7 +191,9 @@ h1 {
 }
 
 .highlight {
-  background-color: #42b883;
+  background-color: yellow;
+  font-weight: bold;
+
 }
 
 code {
