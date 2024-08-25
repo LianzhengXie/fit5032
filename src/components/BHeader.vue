@@ -1,22 +1,16 @@
 <script setup>
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { watch, ref } from 'vue';
+import { isAuthenticated, logout } from '../router';
 
-const router = useRouter();
-const isAuthenticated = computed(() => {
-  return !!localStorage.getItem('userLoggedIn');
-});
-
-const logout = () => {
-  localStorage.removeItem('userLoggedIn');
-  router.push({ name: 'Login' });
+const handleLogout = () => {
+  logout();
 };
 </script>
 
 <template>
   <!-- Using Bootstrap's Header template (starter code) -->
   <!-- https://getbootstrap.com/docs/5.0/examples/headers/ -->
-  <div class="container">
+  <div class="container" :key="isAuthenticated">
     <header class="d-flex justify-content-center py-3">
       <ul class="nav nav-pills">
         <li class="nav-item">
@@ -29,11 +23,11 @@ const logout = () => {
           <!-- <li class="nav-item"><a href="#" class="nav-link">Contact us</a></li> -->
         </li>
         <li class="nav-item" v-if="isAuthenticated">
-          <button @click="logout" class="nav-link btn btn-link">Logout</button>
+          <button @click="handleLogout" class="nav-link btn btn-link">Logout</button>
         </li>
         <li class="nav-item" v-else>
           <router-link to="/login" class="nav-link" active-class="active">Login</router-link>
-        </li>
+        </li> 
       </ul>
 
     </header>

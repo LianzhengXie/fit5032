@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { isAuthenticated } from '../router/index.js';
 
 const router = useRouter();
 
@@ -12,6 +13,7 @@ const formData = ref({
 const login = () => {
   if (formData.value.username === 'admin1' && formData.value.password === '123!@#qweQWE') {
     localStorage.setItem('userLoggedIn', 'true');
+    isAuthenticated.value = true;  // Update the global isAuthenticated status.
     router.push({ name: 'About' });
   } else {
     router.push({ name: 'AccessDenied' });
@@ -28,7 +30,7 @@ const clearForm = () => {
 const errors = ref({
   username: null,
   password: null
-})
+});
 
 const validateName = (blur) => {
   if (formData.value.username.length < 3) {

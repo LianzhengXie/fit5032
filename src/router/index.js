@@ -1,9 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { ref } from 'vue';
 import HomeView from '../views/HomeView.vue';
 import AboutView from '../views/AboutView.vue';
 import LoginView from '../views/LoginView.vue';
 import AccessDeniedView from '../views/AccessDeniedView.vue';
 
+export const isAuthenticated = ref(!!localStorage.getItem('userLoggedIn')); // Global authentication status
 const routes = [
   {
     path: '/',
@@ -33,14 +35,23 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('userLoggedIn');
-  
+router.beforeEach((to, from, next) => {  
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: 'AccessDenied' });
   } else {
     next();
   }
 });
+
+export const login = () => {
+  localStorage.setItem('userLoggedIn', 'true');
+  isAuthenticated.value = true;
+};
+
+export const logout = () => {
+  localStorage.removeItem('userLoggedIn');
+  isAuthenticated.value = false;
+  router.push({ name: 'Login' });  // Redirect to login page after logging out
+};
 
 export default router

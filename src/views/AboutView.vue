@@ -1,12 +1,13 @@
 <script setup>
-  import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
+import { isAuthenticated, logout } from '../router';
 
-  const router = useRouter()
-  const logout = () => {
-    localStorage.removeItem('userLoggedIn');
-    router.push({ name: 'Login' });
-  };
+const router = useRouter();
 
+const handleLogout = () => {
+  logout(); // calls the global logout function, which updates the isAuthenticated state
+  router.push({ name: 'Login' }); 
+};
 </script>
 
 <template>
@@ -19,7 +20,7 @@
         </p>
       </div>
       <div class="text-center">
-        <button type="button" class="btn btn-secondary" @click="logout">Logout</button>
+        <button type="button" class="btn btn-secondary" @click="handleLogout">Logout</button>
       </div>
 
     </div>
