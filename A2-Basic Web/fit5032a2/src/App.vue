@@ -1,7 +1,5 @@
 <script setup>
-import JSONLab from './components/JSONLab.vue'
-import BHeader from './components/BHeader.vue'
-import LibraryRegistrationForm from './views/HomeView.vue'
+  import BHeader from './components/BHeader.vue'
 </script>
 
 <template>
@@ -11,8 +9,6 @@ import LibraryRegistrationForm from './views/HomeView.vue'
 
   <main>
     <router-view></router-view>
-    <!-- <LibraryRegistrationForm /> -->
-    <!-- <JSONLab /> -->
   </main>
 </template>
 
@@ -26,7 +22,7 @@ header {
   margin: 0 auto 2rem;
 }
 
-@media (min-width: 1024px) {
+/* @media (min-width: 1024px) {
   header {
     display: flex;
     place-items: center;
@@ -41,6 +37,47 @@ header {
     display: flex;
     place-items: flex-start;
     flex-wrap: wrap;
+  }
+} */
+
+@media (max-width: 576px) {
+  .navbar {
+    display: none;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 768px) {
+  .content {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1200px) {
+  header {
+    display: flex;
+    place-items: center;
+    padding-right: calc(var(--section-gap) / 2);
+  }
+
+  .logo {
+    margin: 0 2rem 0 0;
+  }
+
+  .sidebar {
+    width: 200px;
+  }
+
+  header .wrapper {
+    display: flex;
+    place-items: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+@media (min-width: 1400px) {
+  .main {
+    margin: 0 auto;
+    max-width: 1200px;
   }
 }
 </style>

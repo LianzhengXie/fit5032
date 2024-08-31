@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { isAuthenticated } from '../router/index.js';
+import { users, login } from '../router/index.js';
 
 const router = useRouter();
 
@@ -10,27 +10,37 @@ const formData = ref({
   password: ''
 });
 
-const login = () => {
-  if (formData.value.username === 'admin1' && formData.value.password === '123!@#qweQWE') {
-    localStorage.setItem('userLoggedIn', 'true');
-    isAuthenticated.value = true;  // Update the global isAuthenticated status.
-    router.push({ name: 'About' });
-  } else {
-    router.push({ name: 'AccessDenied' });
-  }
-};
-
-const clearForm = () => {
-  formData.value = {
-    username: '',
-    password: '',
-  }
-}
-
 const errors = ref({
   username: null,
   password: null
 });
+
+const loginForm = () => {
+  const user = users.value.find(
+    (u) => u.username === formData.value.username && u.password === formData.value.password
+  );
+
+  if (user) {
+    login(user.role);  // 调用全局 login 函数
+    console.log('Login successful:', user);
+
+    if (user.role === 'admin') {
+      router.push({ name: 'Admin' });
+    } else {
+      router.push({ name: 'Home' });
+    }
+  } else {
+    alert('Invalid login credentials');
+  }
+};
+
+const toRegister = () => {
+  formData.value = {
+    username: '',
+    password: ''
+  };
+  router.push({ name: 'Register' });
+};
 
 const validateName = (blur) => {
   if (formData.value.username.length < 3) {
@@ -38,7 +48,7 @@ const validateName = (blur) => {
   } else {
     errors.value.username = null;
   }
-}
+};
 
 const validatePassword = (blur) => {
   const password = formData.value.password;
@@ -64,17 +74,15 @@ const validatePassword = (blur) => {
 };
 </script>
 
-
 <template>
-  <!-- 🗄️ W5. Login page -->
   <div class="container mt-5">
     <div class="row">
       <div class="col-md-8 offset-md-2">
         <h1 class="text-center">🗄️ Library Login</h1>
         <p class="text-center">
-          Let's build some more advanced features into our form.
+          Please enter your credentials to login.
         </p>
-        <form @submit.prevent="login">
+        <form @submit.prevent="loginForm">
           <div class="row mb-3">
             <div class="col-md-6 offset-md-3">
               <label for="username" class="form-label">Username</label>
@@ -103,19 +111,16 @@ const validatePassword = (blur) => {
               />
               <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
             </div>
-
           </div>
+
           <div class="text-center">
             <button type="submit" class="btn btn-primary me-2">Login</button>
-            <button type="button" class="btn btn-secondary" @click="clearForm">Clear</button>
+            <button type="button" class="btn btn-secondary" @click="toRegister">Register</button>
           </div>
         </form>
       </div>
     </div>
   </div>
-
-
- 
 </template>
 
 <style scoped>
@@ -124,13 +129,6 @@ const validatePassword = (blur) => {
   max-width: 80vw;
   margin: 0 auto;
   padding: 20px;
-  /* background-color: #e0bfbf; */
   border-radius: 10px;
-}
-
-/* Class selectors */
-.form {
-  text-align: center;
-  margin-top: 50px;
 }
 </style>

@@ -33,7 +33,7 @@ const clearForm = () => {
     reason: '',
     gender: ''
   }
-}
+};
 
 const errors = ref({
   username: null,
@@ -71,7 +71,7 @@ const validatePassword = (blur) => {
   } else if (!hasSpecialChar) {
     if (blur) errors.value.password = 'Password must contain at least one special character.'
   } else {
-    errors.value.password = null
+    errors.value.password = null;
   }
 }
 
@@ -83,7 +83,7 @@ const validatePassword = (blur) => {
   if (formData.value.password !== formData.value.confirmPassword) {
     if (blur) errors.value.confirmPassword = 'Passwords do not match.'
   } else {
-    errors.value.confirmPassword = null
+    errors.value.confirmPassword = null;
   }
 }
 

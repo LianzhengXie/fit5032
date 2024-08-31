@@ -28,6 +28,9 @@ const handleLogout = () => {
         <li class="nav-item" v-else>
           <router-link to="/login" class="nav-link" active-class="active">Login</router-link>
         </li> 
+        <li class="nav-item" v-if="!isAuthenticated">
+          <router-link to="/register" class="nav-link" active-class="active">Register</router-link>
+        </li> 
       </ul>
 
     </header>
