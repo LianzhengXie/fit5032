@@ -1,8 +1,9 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { users, login } from '../router/index.js';
+import { useAuth } from '../router/auth';
 
+const { users, login } = useAuth();
 const router = useRouter();
 
 const formData = ref({
@@ -21,7 +22,7 @@ const loginForm = () => {
   );
 
   if (user) {
-    login(user.role);  // 调用全局 login 函数
+    login(user.role);
     console.log('Login successful:', user);
 
     if (user.role === 'admin') {

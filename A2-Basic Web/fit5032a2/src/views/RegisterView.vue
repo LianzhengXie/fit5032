@@ -1,9 +1,11 @@
 <script setup>
 import { ref } from 'vue';
-import { users, login } from '../router/index.js'; // import user data and login function
 import { useRouter } from 'vue-router';
+import { useAuth } from '../router/auth';
 
+const { users, login } = useAuth();
 const router = useRouter();
+
 const formData = ref({
   username: '',
   email: '',
@@ -47,7 +49,7 @@ const registerForm = () => {
       role: 'user'  // Default role is user
     });
 
-    // Login using the user's  role
+    // Login using the user's role
     login('user');
     console.log('User registered and logged in', formData.value);
 

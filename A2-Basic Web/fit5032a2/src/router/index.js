@@ -1,28 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { ref } from 'vue';
+import { useAuth } from '../router/auth';
 import HomeView from '../views/HomeView.vue';
 import AboutView from '../views/AboutView.vue';
 import LoginView from '../views/LoginView.vue';
 import AccessDeniedView from '../views/AccessDeniedView.vue';
 import RegisterView from '../views/RegisterView.vue';
+import RatingView from '../views/RatingView.vue';
 
-export const isAuthenticated = ref(!!localStorage.getItem('userLoggedIn')); // Global authentication status
-export const userRole = ref(localStorage.getItem('userRole'));
 
-export const users = ref([
-  {
-    username: 'JohnDoe',
-    email: 'john@example.com',
-    password: 'Password123!',
-    role: 'user'
-  },
-  {
-    username: 'AdminUser',
-    email: 'admin@example.com',
-    password: 'AdminPassword!',
-    role: 'admin'
-  }
-]);
+const { isAuthenticated, userRole } = useAuth();
 
 const routes = [
   {
@@ -56,6 +42,12 @@ const routes = [
     name: 'Admin',
     component: () => import('../views/AdminView.vue'),
     meta: { requiresAuth: true, role: 'admin' }
+  },
+  {
+    path: '/rating',
+    name: 'Rating',
+    component: RatingView,
+    meta: { requiresAuth: true }
   }
 ];
 
@@ -75,20 +67,5 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
-
-export const login = (role) => {
-  localStorage.setItem('userLoggedIn', 'true');
-  localStorage.setItem('userRole', role);
-  isAuthenticated.value = true;
-  userRole.value = role;
-};
-
-export const logout = () => {
-  localStorage.removeItem('userLoggedIn');
-  localStorage.removeItem('userRole');
-  isAuthenticated.value = false;
-  userRole.value = null;
-  router.push({ name: 'Login' });  
-};
 
 export default router;

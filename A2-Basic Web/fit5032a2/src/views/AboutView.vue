@@ -1,12 +1,15 @@
 <script setup>
+import { useAuth } from '../router/auth';
 import { useRouter } from 'vue-router';
-import { isAuthenticated, logout } from '../router';
+
+const { logout } = useAuth();
 
 const router = useRouter();
 
 const handleLogout = () => {
-  logout(); // calls the global logout function, which updates the isAuthenticated state
+  logout(router);  // router as a parameter
   router.push({ name: 'Login' }); 
+
 };
 </script>
 
