@@ -1,3 +1,13 @@
+<script setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
+  const goToLogin = () => {
+    router.push({ name: 'Login' });
+  };
+  
+</script>
+    
 <template>
     <div class="container mt-5">
         <div class="row">
@@ -15,19 +25,6 @@
     </div>
 </template>
 
-
-
-    
-<script setup>
-import { useRouter } from 'vue-router';
-
-const router = useRouter()
-  const goToLogin = () => {
-    router.push({ name: 'Login' });
-  };
-  
-</script>
-    
 <style>
 .container {
 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -39,3 +36,5 @@ border-radius: 10px;
 }
 
 </style>
+
+    

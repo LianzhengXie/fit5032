@@ -1,83 +1,61 @@
-<script setup>
-  import BHeader from './components/BHeader.vue'
-</script>
+  <script setup>
+    import BHeader from './components/BHeader.vue'
+  </script>
 
-<template>
-  <header>
-    <BHeader />
-  </header>
+  <template>
+    <header>
+      <BHeader />
+    </header>
 
-  <main>
-    <router-view></router-view>
-  </main>
-</template>
+    <main>
+      <router-view></router-view>
+    </main>
+  </template>
 
 <style scoped>
 header {
-  line-height: 1.5;
+  position: relative;
+  z-index: 100;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.main-content {
+  margin-top: 20px;
+  padding: 20px;
 }
-
-/* @media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-} */
 
 @media (max-width: 576px) {
-  .navbar {
-    display: none;
+  .main-content {
+    padding: 10px;
   }
 }
 
 @media (min-width: 576px) and (max-width: 768px) {
-  .content {
-    font-size: 14px;
+  .main-content {
+    padding: 15px;
   }
 }
 
 @media (min-width: 992px) and (max-width: 1200px) {
   header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+    padding-right: 10px;
   }
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  .sidebar {
-    width: 200px;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+  .main-content {
+    padding: 20px;
+    margin: 0 auto;
+    max-width: 800px;
   }
 }
 
 @media (min-width: 1400px) {
-  .main {
+  header {
+    padding-right: 15px;
+  }
+
+  .main-content {
+    padding: 30px;
     margin: 0 auto;
-    max-width: 1200px;
+    max-width: 1000px;
   }
 }
 </style>
