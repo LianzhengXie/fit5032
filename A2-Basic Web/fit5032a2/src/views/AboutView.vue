@@ -1,29 +1,25 @@
 <script setup>
-import { useAuth } from '../router/auth';
 import { useRouter } from 'vue-router';
 
-const { logout } = useAuth();
-
-const router = useRouter();
-
-const handleLogout = () => {
-  router.push({ name: 'Login' });
-
-  logout(router);  // router as a parameter
-};
+const router = useRouter()
+  const goToLogin = () => {
+    router.push({ name: 'Login' });
+  };
+  
 </script>
 
 <template>
   <div class="container mt-5">
     <div class="row">
       <div class="col-md-8 offset-md-2">
-        <h1 class="text-center">About Our Library</h1>
+        <h1 class="text-center">About Our Website</h1>
         <p>
-          Welcome to our digital library! We're dedicated to providing a vast collection of books and resources to our community.
+          Welcome to Mental Health Support, a dedicated platform committed to supporting individuals on their journey to mental well-being. We understand that mental health is a vital aspect of overall health, yet it often remains overlooked or stigmatized. Our mission is to provide a safe, compassionate, and inclusive space where everyone can access the resources, support, and community they need to navigate their mental health challenges.
+
         </p>
       </div>
       <div class="text-center">
-        <button type="button" class="btn btn-secondary" @click="handleLogout">Logout</button>
+        <button type="button" class="btn btn-primary me-2" @click="goToLogin">Login</button>
       </div>
 
     </div>

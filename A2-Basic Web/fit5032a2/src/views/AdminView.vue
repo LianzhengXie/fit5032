@@ -1,14 +1,26 @@
+<script setup>
+  import { useAuth } from '../router/auth';
+  import { useRouter } from 'vue-router';
+
+  const { logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    router.push({ name: 'Login' });
+    logout(router);
+  };
+</script>
+
 <template>
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-8 offset-md-2">
                 <h1 class="text-center">🗄️ Admin</h1>
                 <p class="text-center">
-                    You do not have permission to view this page, please log in with your account to view .
-                </p>
+                    This is the admin user page only the administrator has permission to open, in this page you can see the details of the site, the follow-up will be added to other features, such as view all user information.                </p>
 
                 <div class="text-center">
-                    <button type="button" @click="goToLogin" class="btn btn-primary me-2">Go to Login</button>
+                    <button type="button" @click="handleLogout" class="btn btn-primary me-2">Logout</button>
                 </div>
             </div>
         </div>
@@ -18,15 +30,7 @@
 
 
     
-<script setup>
-import { useRouter } from 'vue-router';
 
-const router = useRouter()
-  const goToLogin = () => {
-    router.push({ name: 'Login' });
-  };
-  
-</script>
     
 <style>
 .container {

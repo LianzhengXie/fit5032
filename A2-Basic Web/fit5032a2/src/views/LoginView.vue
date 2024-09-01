@@ -79,7 +79,7 @@ const validatePassword = (blur) => {
   <div class="container mt-5">
     <div class="row">
       <div class="col-md-8 offset-md-2">
-        <h1 class="text-center">🗄️ Library Login</h1>
+        <h1 class="text-center">🗄️ Website Login</h1>
         <p class="text-center">
           Please enter your credentials to login.
         </p>

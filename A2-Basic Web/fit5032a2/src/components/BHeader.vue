@@ -1,21 +1,21 @@
 <script setup>
-import { ref } from 'vue';
-import { useAuth } from '../router/auth';
-import { useRouter } from 'vue-router';
+  import { ref } from 'vue';
+  import { useAuth } from '../router/auth';
+  import { useRouter } from 'vue-router';
 
-const { isAuthenticated, userRole, logout } = useAuth();
-const router = useRouter();
+  const { isAuthenticated, userRole, logout } = useAuth();
+  const router = useRouter();
 
-const isMenuOpen = ref(false);
+  const isMenuOpen = ref(false);
 
-const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value;
-};
+  const toggleMenu = () => {
+    isMenuOpen.value = !isMenuOpen.value;
+  };
 
-const handleLogout = () => {
-  router.push({ name: 'Login' });
-  logout(router);
-};
+  const handleLogout = () => {
+    router.push({ name: 'Login' });
+    logout(router);
+  };
 </script>
 
 
@@ -58,44 +58,44 @@ const handleLogout = () => {
 </template>
 
 <style scoped>
-.bheader-container {
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #ddd;
-}
+  .bheader-container {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+  }
 
-.site-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #333;
-  margin-left: 20px;
-}
+  .site-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-left: 20px;
+  }
 
-.breadcrumb-nav .nav-link {
-  font-weight: bold;
-  color: #555;
-  margin: 0 5px;
-}
+  .breadcrumb-nav .nav-link {
+    font-weight: bold;
+    color: #555;
+    margin: 0 5px;
+  }
 
-.nav-link.active {
-  color: white;
-  background-color: #007bff;
-}
+  .nav-link.active {
+    color: white;
+    background-color: #007bff;
+  }
 
-.nav-link.btn-link {
-  color: #007bff;
-}
+  .nav-link.btn-link {
+    color: #007bff;
+  }
 
-.hamburger-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  display: none;
-}
+  .hamburger-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: none;
+  }
 
-.hamburger-icon {
-  color: #007bff;
-}
+  .hamburger-icon {
+    color: #007bff;
+  }
 
 @media (max-width: 768px) {
   .hamburger-btn {

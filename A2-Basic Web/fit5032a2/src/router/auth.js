@@ -11,7 +11,7 @@ export const users = ref([
     role: 'user'
   },
   {
-    username: 'AdminUser',
+    username: 'Admin',
     email: 'admin@example.com',
     password: 'AdminPassword!1',
     role: 'admin'
