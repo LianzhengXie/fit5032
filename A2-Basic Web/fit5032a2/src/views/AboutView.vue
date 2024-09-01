@@ -7,9 +7,9 @@ const { logout } = useAuth();
 const router = useRouter();
 
 const handleLogout = () => {
-  logout(router);  // router as a parameter
-  router.push({ name: 'Login' }); 
+  router.push({ name: 'Login' });
 
+  logout(router);  // router as a parameter
 };
 </script>
 
