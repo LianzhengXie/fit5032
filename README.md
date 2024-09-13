@@ -1,4 +1,4 @@
-# week2
+# To view the weekly assignments please see the sub-directions for the weekly assignments, e.g. W7-8.
 
 This template should help get you started developing with Vue 3 in Vite.
 
