@@ -27,7 +27,19 @@ const handleLogout = () => {
         </li>
         <li class="nav-item" v-else>
           <router-link to="/login" class="nav-link" active-class="active">Login</router-link>
-        </li> 
+        </li>
+        <li class="nav-item">
+          <router-link to="/FireLogin" class="nav-link" active-class="active">Firebase Login</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/FireRegister" class="nav-link" active-class="active">Firebase Register</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/addbook" class="nav-link" active-class="active">Add book</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/bookList" class="nav-link" active-class="active">BookList</router-link>
+        </li>
       </ul>
 
     </header>

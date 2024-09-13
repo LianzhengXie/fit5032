@@ -15,7 +15,5 @@ const app = createApp(App)
 app.use(PrimeVue, { theme: { preset: Aura } })
 app.use(router)
 
-// app.component('DataTable', DataTable)
-// app.component('Column', Column)
 
 app.mount('#app')
