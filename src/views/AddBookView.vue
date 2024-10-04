@@ -1,20 +1,39 @@
 <template>
-    <div>
-        <h1>Add Book</h1>
-        <form @submit.prevent="addBook">
-            <div>
+    <!-- 🗄️ W9. Add Book -->
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-8 offset-md-2">
+          <h1 class="text-center">🗄️ Add Book</h1>
+          <p class="text-center">
+            Adding new book data in uppercase and storing it in the Firestore
+          </p>
+          <form @submit.prevent="addBook">
+            <div class="row mb-3">
+              <div class="col-md-6 offset-md-3">
                 <label for="isbn">ISBN:</label>
-                <input type="text" v-model="isbn" id="isbn" required />
+                <input type="isbn" class="form-control" id="isbn" v-model="isbn" placeholder="isbn" required>
+              </div>
             </div>
-            <div>
+  
+            <div class="row mb-3">
+              <div class="col-md-6 offset-md-3">
                 <label for="name">Name: </label>
-                <input type="text" v-model="name" id="name" required/>
+                <input type="name" class="form-control" id="name" v-model="name" placeholder="name" required>
+              </div>
+  
             </div>
-            <button type="submit">Add book</button>
-        </form>
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary">Add book</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-</template>
-
+  
+  
+   
+  </template>
+  
 <script>
 import { ref } from 'vue';
 import db from '../firebase/init'; 

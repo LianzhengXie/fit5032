@@ -1,0 +1,11 @@
+{
+  "projects": {
+    "default": "vue-firebase-auth-w7-e8b7b"
+  },
+  "targets": {},
+  "etags": {
+    "vue-firebase-auth-w7-e8b7b": {
+      "extensionInstances": {}
+    }
+  }
+}
