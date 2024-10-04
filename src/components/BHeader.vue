@@ -41,7 +41,16 @@ const handleLogout = () => {
           <router-link to="/bookList" class="nav-link" active-class="active">BookList</router-link>
         </li>
         <li class="nav-item">
-          <router-link to="/GetBookCount" class="nav-link" active-class="active">GetBookCount</router-link>
+          <router-link to="/GetBookCount" class="nav-link" active-class="active">Get Book Count</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/WeatherCheck" class="nav-link" active-class="active">Weather Check</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/CountBookAPI" class="nav-link" active-class="active">Count Book API</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/GetAllBookAPI" class="nav-link" active-class="active">Get All Book API</router-link>
         </li>
       </ul>
 

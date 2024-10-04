@@ -1,18 +1,32 @@
-<script setup>
-import JSONLab from './components/JSONLab.vue'
+<script>
+// import { count, namedQuery } from 'firebase/firestore';
 import BHeader from './components/BHeader.vue'
-import LibraryRegistrationForm from './views/HomeView.vue'
+import CountBookAPI from './views/CountBookAPI.vue';
+import { computed } from 'vue';
+
+export default{
+  name: 'App',
+  components:{
+    BHeader,
+    CountBookAPI
+  },
+  computed:{
+    showHeader(){
+      return this.$route.name !=='CountBookAPI';
+    }
+  }
+};
+
 </script>
 
 <template>
-  <header>
-    <BHeader />
-  </header>
-
-  <main>
+  <div class="main-container">
+    <header v-if="showHeader">
+      <BHeader />
+    </header>
+  </div>
+  <main class="main-box">
     <router-view></router-view>
-    <!-- <LibraryRegistrationForm /> -->
-    <!-- <JSONLab /> -->
   </main>
 </template>
 

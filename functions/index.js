@@ -38,10 +38,19 @@ exports.capitalizeBookData = onDocumentCreated("books/{bookId}", async (event) =
     await event.data.ref.update(capitalizedData);
 });
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
-
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+exports.getAllBooks = onRequest((req, res) => {
+  cors(req, res, async () => {
+      try {
+        const booksSnapshot = await admin.firestore().collection('books').get();
+        const books = booksSnapshot.docs.map(doc => ({
+          id: doc.id,
+          isbn: doc.data().isbn,
+          name: doc.data().name,
+        }));
+        res.status(200).json(books);
+      } catch (error) {
+          console.error('Error fetching book count: ', error);
+          res.status(500).send({ error: 'Failed to fetch book count' });
+      }
+  });
+});
