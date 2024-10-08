@@ -1,5 +1,5 @@
 <script setup>
-    import { ref } from 'vue';
+  import { ref } from 'vue';
   import { useRouter } from 'vue-router';
 
   const router = useRouter()
@@ -35,7 +35,7 @@
         <h1>Welcome to Mental Health Support</h1>
         <p>Your journey to better mental health starts here.</p>
         <div class="text-center">
-                    <button type="button" @click="goToLogin" class="btn btn-primary me-2">Go to Login</button>
+          <button type="button" @click="goToLogin" class="btn btn-primary me-2">Go to Login</button>
         </div>
       </div>
     </header>

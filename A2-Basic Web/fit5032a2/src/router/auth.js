@@ -1,38 +1,69 @@
-import { ref } from 'vue';
+// src/router/auth.js
+import { ref, onMounted } from 'vue';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from "firebase/firestore";
+import db from '../firebase/init'; // Update path as needed
+import { useToast } from 'vue-toastification';
 
-const isAuthenticated = ref(!!localStorage.getItem('userLoggedIn'));
-const userRole = ref(localStorage.getItem('userRole'));
-
-export const users = ref([
-  {
-    username: 'JohnDoe',
-    email: 'john@example.com',
-    password: 'Password123!',
-    role: 'user'
-  },
-  {
-    username: 'Admin',
-    email: 'admin@example.com',
-    password: 'AdminPassword!1',
-    role: 'admin'
-  }
-]);
-
-export const login = (role) => {
-  localStorage.setItem('userLoggedIn', 'true');
-  localStorage.setItem('userRole', role);
-  isAuthenticated.value = true;
-  userRole.value = role;
-};
-
-export const logout = (router) => {
-  localStorage.removeItem('userLoggedIn');
-  localStorage.removeItem('userRole');
-  isAuthenticated.value = false;
-  userRole.value = null;
-  router.push({ name: 'Login' });
-};
+// Authentication state
+const isAuthenticated = ref(false);
+const userRole = ref(null);
+const toast = useToast();
 
 export const useAuth = () => {
-  return { isAuthenticated, userRole, login, logout, users };
+  const auth = getAuth();
+
+  // Monitor authentication state changes
+  onMounted(() => {
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        isAuthenticated.value = true;
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+          userRole.value = userDoc.data().role;
+        } else {
+          userRole.value = 'user';
+        }
+      } else {
+        isAuthenticated.value = false;
+        userRole.value = null;
+      }
+    });
+  });
+
+  const login = async (email, password) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      isAuthenticated.value = true;
+
+      // Retrieve the role from Firestore
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists()) {
+        userRole.value = userDoc.data().role;
+      } else {
+        userRole.value = 'user';
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Login failed:", error);
+      return false;
+    }
+  };
+
+  const logout = async (router) => {
+    try {
+      await signOut(auth);
+      isAuthenticated.value = false;
+      userRole.value = null;
+      router.push({ name: 'Login' });
+      toast.info('Logged out successfully!');
+      console.log('User logged out');
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  return { isAuthenticated, userRole, login, logout };
 };

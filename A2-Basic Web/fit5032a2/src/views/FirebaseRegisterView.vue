@@ -1,65 +1,42 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuth } from '../router/auth';
-
-const { users, login } = useAuth();
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import db from '../firebase/init'; 
+import { useToast } from 'vue-toastification';
 
 const router = useRouter();
+const toast = useToast();
 
 const formData = ref({
   username: '',
   email: '',
   password: '',
   confirmPassword: '',
-  isAustralian: false,
-  reason: '',
-  gender: ''
+  gender: '',
+  role: 'viewer'
 });
 
 const errors = ref({
   username: null,
   email: null,
   password: null,
-  confirmPassword: null,
-  reason: null
+  confirmPassword: null
 });
 
 const clearForm = () => {
   formData.value = {
     username: '',
-    password: '',
     email: '',
+    password: '',
     confirmPassword: '',
-    reason: '',
-    gender: ''
+    gender: '',
+    role: ''
   };
 };
 
-const registerForm = () => {
-  validateName(true);
-  validatePassword(true);
-  validateConfirmPassword(true);
-  validateEmail(true);
-
-  if (!errors.value.username && !errors.value.password && !errors.value.confirmPassword && !errors.value.email) {
-    users.value.push({
-      username: formData.value.username,
-      email: formData.value.email,
-      password: formData.value.password,
-      role: 'user'  // Default role is user
-    });
-
-    // Login using the user's role
-    login('user');
-    console.log('User registered and logged in', formData.value);
-
-    clearForm();
-    router.push({ name: 'Home' });
-  }
-};
-
-// Email format validation
+// Form validation methods
 const validateEmail = (blur) => {
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (formData.value.email && !emailPattern.test(formData.value.email)) {
@@ -108,6 +85,41 @@ const validateConfirmPassword = (blur) => {
   }
 };
 
+// Registration method
+const registerForm = async () => {
+  validateName(true);
+  validatePassword(true);
+  validateConfirmPassword(true);
+  validateEmail(true);
+
+  if (!errors.value.username && !errors.value.password && !errors.value.confirmPassword && !errors.value.email) {
+    const auth = getAuth();
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, formData.value.email, formData.value.password);
+      const user = userCredential.user;
+
+      // Save additional user info to Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        username: formData.value.username,
+        email: formData.value.email,
+        gender: formData.value.gender,
+        role: 'user'
+      });
+      toast.success('Registration successful!');
+
+      clearForm();
+
+      router.push({ name: 'Home' });
+
+    } catch (error) {
+      console.error('Error registering user:', error);
+      console.error('Error registering user:', error.message);
+
+      errors.value.email = 'Email is incorrect or already registered. Please try again.';
+      toast.error('Registration failed. Please try again.');
+    }
+  }
+};
 </script>
 
 <template>
@@ -117,7 +129,7 @@ const validateConfirmPassword = (blur) => {
         <h1 class="text-center">User Registration</h1>
         <form @submit.prevent="registerForm">
           <div class="row mb-3">
-            <div class="col-md-6 col-sm-6">
+            <div class="col-md-6">
               <label for="username" class="form-label">Username<span class="text-danger">*</span></label>
               <input
                 type="text"
@@ -131,7 +143,7 @@ const validateConfirmPassword = (blur) => {
               <div v-if="errors.username" class="text-danger">{{ errors.username }}</div>
             </div>
 
-            <div class="col-md-6 col-sm-6">
+            <div class="col-md-6">
               <label for="email" class="form-label">Email<span class="text-danger">*</span></label>
               <input
                 type="email"
@@ -147,7 +159,7 @@ const validateConfirmPassword = (blur) => {
           </div>
 
           <div class="row mb-3">
-            <div class="col-md-6 col-sm-6">
+            <div class="col-md-6">
               <label for="password" class="form-label">Password<span class="text-danger">*</span></label>
               <input
                 type="password"
@@ -161,8 +173,8 @@ const validateConfirmPassword = (blur) => {
               <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
             </div>
 
-            <div class="col-md-6 col-sm-6">
-              <label for="confirm-password" class="form-label">Confirm password<span class="text-danger">*</span></label>
+            <div class="col-md-6">
+              <label for="confirm-password" class="form-label">Confirm Password<span class="text-danger">*</span></label>
               <input
                 type="password"
                 class="form-control"
@@ -176,7 +188,7 @@ const validateConfirmPassword = (blur) => {
           </div>
 
           <div class="row mb-3">
-            <div class="col-md-6 col-sm-6">
+            <div class="col-md-6">
               <label for="gender" class="form-label">Gender</label>
               <select class="form-select" id="gender" v-model="formData.gender">
                 <option value="male">Male</option>
@@ -185,29 +197,16 @@ const validateConfirmPassword = (blur) => {
               </select>
             </div>
 
-            <div class="col-md-6 col-sm-6">
-              <div class="form-check">
-                <input
-                  type="checkbox"
-                  class="form-check-input"
-                  id="isAustralian"
-                  v-model="formData.isAustralian"
-                />
-                <label class="form-check-label" for="isAustralian">Australian Resident?</label>
-              </div>
+            <div class="col-md-6">
+                <label for="role" class="form-label">Role</label>
+                <select class="form-select" id="role" v-model="formData.role">
+                  <option value="admin">Admin</option>
+                  <option value="user">User</option>
+                  <option value="viewer">Viewer</option>
+                </select>
             </div>
           </div>
 
-          <div class="mb-3">
-            <label for="reason" class="form-label">Reason for joining</label>
-            <textarea
-              class="form-control"
-              id="reason"
-              rows="3"
-              v-model="formData.reason"
-            ></textarea>
-            <div v-if="errors.reason" class="text-danger">{{ errors.reason }}</div>
-          </div>
 
           <div class="text-center">
             <button type="submit" class="btn btn-primary me-2">Register</button>
@@ -219,7 +218,7 @@ const validateConfirmPassword = (blur) => {
   </div>
 </template>
 
-<style>
+<style scoped>
 .text-danger {
   color: red;
 }

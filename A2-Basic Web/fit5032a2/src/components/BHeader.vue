@@ -24,11 +24,11 @@
     <header class="d-flex justify-content-between align-items-center py-3">
       <h1 class="site-title">Mental Health Support</h1>
       
-      <button @click="toggleMenu" class="hamburger-btn d-md-none">
+      <button @click="toggleMenu" class="hamburger-btn d-md-none" aria-expanded="false" aria-controls="navbar-menu">
         <span class="hamburger-icon">&#9776;</span>
       </button>
+      <nav class="breadcrumb-nav" :class="{ 'show-menu': isMenuOpen }" id="navbar-menu">
 
-      <nav class="breadcrumb-nav" :class="{ 'show-menu': isMenuOpen }">
         <ul class="nav nav-pills">
           <li class="nav-item">
             <router-link to="/" class="nav-link" active-class="active" aria-current="page">Home</router-link>
@@ -40,13 +40,14 @@
             <router-link to="/rating" class="nav-link" active-class="active">Rate Projects</router-link>
           </li>
           <li class="nav-item" v-if="isAuthenticated">
-            <button @click="handleLogout" class="nav-link btn btn-link">Logout</button>
+            <button @click="handleLogout" class="nav-link btn btn-link">
+              <i class="fas fa-sign-out-alt"></i>Logout</button>
           </li>
           <li class="nav-item" v-else>
-            <router-link to="/login" class="nav-link" active-class="active">Login</router-link>
+            <router-link to="/login" class="nav-link" active-class="active">FireLogin</router-link>
           </li>
           <li class="nav-item" v-if="!isAuthenticated">
-            <router-link to="/register" class="nav-link" active-class="active">Register</router-link>
+            <router-link to="/register" class="nav-link" active-class="active">FRegister</router-link>
           </li>
           <li class="nav-item" v-if="userRole === 'admin'">
             <router-link to="/admin" class="nav-link" active-class="active">Admin</router-link>

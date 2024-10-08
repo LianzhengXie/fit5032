@@ -8,14 +8,22 @@ import router from './router/index.js'
 
 import PrimeVue from 'primevue/config'
 import Aura from '@primevue/themes/aura'
-// import DataTable from 'primevue/datatable'
-// import Column from 'primevue/Column'
+import Toast from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
+import store from './store';
+import { useStore } from 'vuex';
+
+export default {
+  setup() {
+    const store = useStore();
+    store.dispatch('initializeAuth'); // Start monitoring authentication state
+  }
+};
 
 const app = createApp(App)
 app.use(PrimeVue, { theme: { preset: Aura } })
 app.use(router)
-
-// app.component('DataTable', DataTable)
-// app.component('Column', Column)
+app.use(Toast);
+app.use(store);
 
 app.mount('#app')

@@ -2,11 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useAuth } from '../router/auth';
 import HomeView from '../views/HomeView.vue';
 import AboutView from '../views/AboutView.vue';
-import LoginView from '../views/LoginView.vue';
+// import LoginView from '../views/LoginView.vue';
 import AccessDeniedView from '../views/AccessDeniedView.vue';
-import RegisterView from '../views/RegisterView.vue';
+// import RegisterView from '../views/RegisterView.vue';
 import RatingView from '../views/RatingView.vue';
-
+import FirebaseSigninView from '@/views/FirebaseSigninView.vue';
+import FirebaseRegisterView from '@/views/FirebaseRegisterView.vue';
 
 const { isAuthenticated, userRole } = useAuth();
 
@@ -24,12 +25,12 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: LoginView
+    component: FirebaseSigninView
   },
   {
     path: '/register',
     name: 'Register',
-    component: RegisterView
+    component: FirebaseRegisterView
   },
   {
     path: '/access-denied',
