@@ -1,14 +1,14 @@
 <script setup>
-  import { useAuth } from '../router/auth';
-  import { useRouter } from 'vue-router';
+    import { useStore } from 'vuex';
+    import { useRouter } from 'vue-router';
 
-  const { logout } = useAuth();
-  const router = useRouter();
+    const store = useStore();
+    const router = useRouter();
 
-  const handleLogout = () => {
-    router.push({ name: 'Login' });
-    logout(router);
-  };
+    const handleLogout = () => {
+    store.dispatch('logout', router); // Call the Vuex logout action
+    router.push({ name: 'Login' });   // Redirect to Login page
+    };
 </script>
 
 <template>

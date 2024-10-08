@@ -1,21 +1,17 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import db from '../firebase/init'; 
-import { useToast } from 'vue-toastification';
+import { useStore } from 'vuex';
 
+const store = useStore();
 const router = useRouter();
-const toast = useToast();
 
 const formData = ref({
   username: '',
   email: '',
   password: '',
   confirmPassword: '',
-  gender: '',
-  role: 'viewer'
+  gender: ''
 });
 
 const errors = ref({
@@ -25,18 +21,18 @@ const errors = ref({
   confirmPassword: null
 });
 
+// Clear form function
 const clearForm = () => {
   formData.value = {
     username: '',
     email: '',
     password: '',
     confirmPassword: '',
-    gender: '',
-    role: ''
+    gender: ''
   };
 };
 
-// Form validation methods
+// Validation functions
 const validateEmail = (blur) => {
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (formData.value.email && !emailPattern.test(formData.value.email)) {
@@ -85,38 +81,26 @@ const validateConfirmPassword = (blur) => {
   }
 };
 
-// Registration method
+// Registration function
 const registerForm = async () => {
+  // Validate all fields before proceeding
   validateName(true);
+  validateEmail(true);
   validatePassword(true);
   validateConfirmPassword(true);
-  validateEmail(true);
 
-  if (!errors.value.username && !errors.value.password && !errors.value.confirmPassword && !errors.value.email) {
-    const auth = getAuth();
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, formData.value.email, formData.value.password);
-      const user = userCredential.user;
+  // If no errors, proceed with registration
+  if (!errors.value.username && !errors.value.email && !errors.value.password && !errors.value.confirmPassword) {
+    const success = await store.dispatch('register', {
+      username: formData.value.username,
+      email: formData.value.email,
+      password: formData.value.password,
+      gender: formData.value.gender
+    });
 
-      // Save additional user info to Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        username: formData.value.username,
-        email: formData.value.email,
-        gender: formData.value.gender,
-        role: 'user'
-      });
-      toast.success('Registration successful!');
-
+    if (success) {
       clearForm();
-
       router.push({ name: 'Home' });
-
-    } catch (error) {
-      console.error('Error registering user:', error);
-      console.error('Error registering user:', error.message);
-
-      errors.value.email = 'Email is incorrect or already registered. Please try again.';
-      toast.error('Registration failed. Please try again.');
     }
   }
 };

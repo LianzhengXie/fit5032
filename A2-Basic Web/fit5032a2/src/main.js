@@ -11,14 +11,7 @@ import Aura from '@primevue/themes/aura'
 import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 import store from './store';
-import { useStore } from 'vuex';
 
-export default {
-  setup() {
-    const store = useStore();
-    store.dispatch('initializeAuth'); // Start monitoring authentication state
-  }
-};
 
 const app = createApp(App)
 app.use(PrimeVue, { theme: { preset: Aura } })

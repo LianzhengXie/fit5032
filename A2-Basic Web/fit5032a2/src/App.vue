@@ -1,5 +1,15 @@
-  <script setup>
-    import BHeader from './components/BHeader.vue'
+  <script>
+    import BHeader from './components/BHeader.vue';
+    import { useStore } from 'vuex';
+
+    export default {
+      components: { BHeader },
+      setup() {
+        const store = useStore();
+        store.dispatch('initializeAuth'); // Initialize auth monitoring
+        return { store };
+      }
+    };
   </script>
 
   <template>

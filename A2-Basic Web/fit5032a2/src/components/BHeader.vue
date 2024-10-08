@@ -1,21 +1,24 @@
 <script setup>
-  import { ref } from 'vue';
-  import { useAuth } from '../router/auth';
-  import { useRouter } from 'vue-router';
+import { ref, computed } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 
-  const { isAuthenticated, userRole, logout } = useAuth();
-  const router = useRouter();
+const store = useStore();
+const router = useRouter();
 
-  const isMenuOpen = ref(false);
+const isAuthenticated = computed(() => store.getters.isAuthenticated);
+const userRole = computed(() => store.getters.userRole);
 
-  const toggleMenu = () => {
-    isMenuOpen.value = !isMenuOpen.value;
-  };
+const isMenuOpen = ref(false);
 
-  const handleLogout = () => {
-    router.push({ name: 'Login' });
-    logout(router);
-  };
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
+
+const handleLogout = () => {
+  store.dispatch('logout', router);
+  router.push({ name: 'Login' });
+};
 </script>
 
 
@@ -38,6 +41,12 @@
           </li>
           <li class="nav-item">
             <router-link to="/rating" class="nav-link" active-class="active">Rate Projects</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/sendemail" class="nav-link" active-class="active">Send Email</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/datatable" class="nav-link" active-class="active">Data Table</router-link>
           </li>
           <li class="nav-item" v-if="isAuthenticated">
             <button @click="handleLogout" class="nav-link btn btn-link">

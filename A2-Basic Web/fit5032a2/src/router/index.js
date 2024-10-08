@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { useAuth } from '../router/auth';
+// import { useAuth } from '../router/auth';
 import HomeView from '../views/HomeView.vue';
 import AboutView from '../views/AboutView.vue';
 // import LoginView from '../views/LoginView.vue';
@@ -8,8 +8,9 @@ import AccessDeniedView from '../views/AccessDeniedView.vue';
 import RatingView from '../views/RatingView.vue';
 import FirebaseSigninView from '@/views/FirebaseSigninView.vue';
 import FirebaseRegisterView from '@/views/FirebaseRegisterView.vue';
-
-const { isAuthenticated, userRole } = useAuth();
+import { useStore } from 'vuex';
+import SendEmailView from '@/views/EmailForm.vue';
+import DataTableView from '@/views/DataTableView.vue';
 
 const routes = [
   {
@@ -38,6 +39,11 @@ const routes = [
     component: AccessDeniedView 
   },
   {
+    path: '/datatable',
+    name: 'datatable',
+    component: DataTableView 
+  },
+  {
     path: '/admin',
     name: 'Admin',
     component: () => import('../views/AdminView.vue'),
@@ -48,6 +54,11 @@ const routes = [
     name: 'Rating',
     component: RatingView,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/sendemail',
+    name: 'SendEmail',
+    component: SendEmailView
   }
 ];
 
@@ -57,15 +68,16 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const role = userRole.value;
-  
-  if (to.meta.requiresAuth && !isAuthenticated.value) {
+  const store = useStore();
+  const isAuthenticated = store.getters.isAuthenticated;
+  const userRole = store.getters.userRole;
+
+  if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: 'AccessDenied' });
-  } else if (to.meta.role && to.meta.role !== role) {
+  } else if (to.meta.role && to.meta.role !== userRole) {
     next({ name: 'AccessDenied' });
   } else {
     next();
   }
 });
-
 export default router;

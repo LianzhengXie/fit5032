@@ -1,3 +1,63 @@
+<script setup>
+import { ref } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+
+const store = useStore();
+const router = useRouter();
+
+const email = ref('');
+const password = ref('');
+const errors = ref({
+  email: null,
+  password: null
+});
+
+// Clear form function
+const clearForm = () => {
+  email.value = '';
+  password.value = '';
+  errors.value.email = null;
+  errors.value.password = null;
+};
+
+// Validation functions
+const validateEmail = (blur) => {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (email.value && !emailPattern.test(email.value)) {
+    if (blur) errors.value.email = 'Please enter a valid email address.';
+  } else {
+    errors.value.email = null;
+  }
+};
+
+const validatePassword = (blur) => {
+  if (password.value.length < 8) {
+    if (blur) errors.value.password = 'Password must be at least 8 characters long.';
+  } else {
+    errors.value.password = null;
+  }
+};
+
+// Login function
+const signInUser = async () => {
+  validateEmail(true);
+  validatePassword(true);
+
+  if (!errors.value.email && !errors.value.password) {
+    const success = await store.dispatch('login', {
+      email: email.value,
+      password: password.value
+    });
+
+    if (success) {
+      clearForm();
+      router.push({ name: 'Home' });
+    }
+  }
+};
+</script>
+
 <template>
     <div class="container mt-5">
       <div class="row">
@@ -47,75 +107,4 @@
       </div>
     </div>
   </template>
-  
-  <script>
-  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
-  import { doc, getDoc } from "firebase/firestore";
-  import db from '../firebase/init';
-  import { useToast } from 'vue-toastification';
-  
-  export default {
-    data() {
-      return {
-        email: '',
-        password: '',
-        currentUser: null,
-        userRole: ''
-      };
-    },
-    methods: {
-      async signInUser() {
-        const auth = getAuth();
-        const toast = useToast();
-        try {
-          const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password);
-          this.currentUser = userCredential.user;
-  
-          // Fetch the user's role from Firestore
-          await this.fetchUserRole();
-          toast.success('Signed in successfully!');
-        } catch (error) {
-          toast.error('Error signing in. Please try again.');
-          console.error('Error signing in: ', error);
-        }
-      },
-      async fetchUserRole() {
-        const userDoc = await getDoc(doc(db, 'users', this.currentUser.uid));
-        if (userDoc.exists()) {
-          this.userRole = userDoc.data().role;
-          console.log(`User logged in as ${this.currentUser.email} with role: ${this.userRole}`);
-        } else {
-          console.log('No such document');
-        }
-      },
-      async logout() {
-        const auth = getAuth();
-        const toast = useToast();
-        try {
-          await signOut(auth);
-          this.currentUser = null;
-          this.userRole = '';
-          toast.info('Logged out successfully!');
-          console.log('User logged out');
-        } catch (error) {
-          toast.error('Error logging out. Please try again.');
-          console.error('Error logging out: ', error);
-        }
-      }
-    },
-    mounted() {
-      const auth = getAuth();
-      onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          this.currentUser = user;
-          await this.fetchUserRole();
-        } else {
-          this.currentUser = null;
-          this.userRole = '';
-        }
-      });
-    }
-  };
-  </script>
-  
   
