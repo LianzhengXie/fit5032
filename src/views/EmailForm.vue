@@ -1,5 +1,78 @@
 <template>
   <div class="email-form">
+    <h2>Send an Email</h2>
+    <form @submit.prevent="handleSendEmail">
+      <input v-model="emailTo" placeholder="Recipient Email" type="email" required />
+      <input v-model="emailSubject" placeholder="Subject" type="text" required />
+      <textarea v-model="emailText" placeholder="Message" required></textarea>
+      <button type="submit">Send Email</button>
+    </form>
+    <p v-if="message">{{ message }}</p>
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      emailTo: '',
+      emailSubject: '',
+      emailText: '',
+      message: ''
+    };
+  },
+  methods: {
+    async handleSendEmail() {
+      try {
+        const response = await axios.post('https://us-central1-health-charity-website-a761c.cloudfunctions.net/sendEmailWithAttachment', {
+          to: this.emailTo,
+          subject: this.emailSubject,
+          text: this.emailText
+        });
+
+        if (response.data.success) {
+          this.message = 'Email sent successfully!';
+        } else {
+          this.message = 'Failed to send email.';
+        }
+      } catch (error) {
+        console.error('Error sending email:', error);
+        this.message = 'Error sending email. Please try again later.';
+      }
+    }
+  }
+};
+</script>
+
+<style scoped>
+.email-form {
+  max-width: 400px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+input, textarea {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+</style>
+
+<!-- <template>
+  <div class="email-form">
     <h2>Send an Email with Attachment</h2>
     <form @submit.prevent="handleSubmit">
       <div class="form-group">
@@ -76,11 +149,7 @@ const emailSent = ref(false);
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      attachment.value = reader.result.split(',')[1]; // Base64 encode
-    };
-    reader.readAsDataURL(file);
+    attachment.value = file; // Store the File object directly
   }
 };
 
@@ -92,19 +161,26 @@ const handleSubmit = async () => {
   }
 
   loading.value = true;
-  const functions = getFunctions();
-  const sendEmailFunction = httpsCallable(functions, 'sendEmail');
+
+  const formData = new FormData();
+  formData.append('to', to.value);
+  formData.append('subject', subject.value);
+  formData.append('text', message.value);
+  if (attachment.value) {
+    formData.append('attachment', attachment.value);
+  }
 
   try {
-    const result = await sendEmailFunction({
-      to: to.value,
-      subject: subject.value,
-      text: message.value,
-      attachment: attachment.value,
+    const response = await fetch(
+      'https://us-central1-health-charity-website-a761c.cloudfunctions.net/sendEmailWithAttachment', {
+      method: 'POST',
+      body: formData
     });
 
-    feedbackMessage.value = result.data.message;
-    emailSent.value = result.data.success;
+    const result = await response.json();
+    feedbackMessage.value = result.message;
+    emailSent.value = result.success;
+
     if (emailSent.value) {
       clearForm();
     }
@@ -116,6 +192,7 @@ const handleSubmit = async () => {
     loading.value = false;
   }
 };
+
 
 const clearForm = () => {
   to.value = '';
@@ -183,4 +260,4 @@ button:disabled {
   color: red;
   font-weight: bold;
 }
-</style>
+</style> -->

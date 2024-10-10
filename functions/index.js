@@ -1,58 +1,42 @@
 // functions/index.js
 const functions = require("firebase-functions");
-const axios = require("axios");
-// Added FormData module to handle multipart/form-data
-const FormData = require("form-data");
+const sgMail = require("@sendgrid/mail");
+const cors = require("cors")({origin: true});
 
-const {mailgunApiKey, mailgunDomain} = functions.config().mailgun;
+// Set up the SendGrid API key
+sgMail.setApiKey(functions.config().sendgrid.api_key);
 
-// Create a function to send an email with an attachment
-exports.sendEmail = functions.https.onCall(async (data, context) => {
-  const {to, subject, text, attachment} = data;
+exports.sendEmailWithAttachment = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      return res.status(405).send({
+        success: false,
+        message: "Only POST requests are allowed",
+      });
+    }
 
-  const mailgunUrl = `https://api.mailgun.net/v3/${mailgunDomain}/messages`;
-  const auth = {
-    username: "api",
-    password: mailgunApiKey,
-  };
+    const {to, subject, text} = req.body;
 
-  // Changed from URLSearchParams to FormData for multipart support
-  const form = new FormData();
-  form.append("from", `Jack <mailgun@${mailgunDomain}>`);
-  form.append("to", to);
-  form.append("subject", subject);
-  form.append("text", text);
-
-  // If there is an attachment, decode it from Base64 and add it
-  if (attachment) {
-    // Convert the attachment from Base64 to a Buffer
-    const buffer = Buffer.from(attachment, "base64");
-    // Append the buffer as an attachment file in the form
-    form.append("attachment", buffer, {filename: "attachment.pdf"});
-    // Specify the file name here
-  }
-
-  try {
-    const response = await axios.post(mailgunUrl, form, {
-      auth: auth,
-      headers: {
-        ...form.getHeaders(),
-      },
-    });
-    return {
-      success: true,
-      message: "Email sent successfully!",
-      data: response.data,
+    const msg = {
+      to: to,
+      from: "lianzheng0014@tutamail.com",
+      subject: subject,
+      text: text,
     };
-  } catch (error) {
-    console.error(
-        "Error response from Mailgun:",
-         error.response ?
-         error.response.data : error.message);
-    return {
-      success: false,
-      message: "Failed to send email.",
-      error: error.message,
-    };
-  }
+
+    try {
+      await sgMail.send(msg);
+      console.log(`Email sent to ${to}`);
+      res.status(200).send({
+        success: true,
+        message: "Email sent successfully!",
+      });
+    } catch (error) {
+      console.error("Error sending email:", error);
+      res.status(500).send({
+        success: false,
+        message: "Failed to send email.", error: error.message,
+      });
+    }
+  });
 });
