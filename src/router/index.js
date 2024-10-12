@@ -1,17 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router';
-// import { useAuth } from '../router/auth';
 import HomeView from '../views/HomeView.vue';
 import AboutView from '../views/AboutView.vue';
-// import LoginView from '../views/LoginView.vue';
 import AccessDeniedView from '../views/AccessDeniedView.vue';
-// import RegisterView from '../views/RegisterView.vue';
 import RatingView from '../views/RatingView.vue';
 import FirebaseSigninView from '@/views/FirebaseSigninView.vue';
 import FirebaseRegisterView from '@/views/FirebaseRegisterView.vue';
-import { useStore } from 'vuex';
 import SendEmailView from '@/views/EmailForm.vue';
 import DataTableView from '@/views/DataTableView.vue';
 import MapView from '@/views/MapView.vue';
+import store from '@/store'; // Import the store directly
 
 const routes = [
   {
@@ -74,8 +71,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const store = useStore();
-  const isAuthenticated = store.getters.isAuthenticated;
+  const isAuthenticated = store.getters.isAuthenticated; // Access Vuex store directly
   const userRole = store.getters.userRole;
 
   if (to.meta.requiresAuth && !isAuthenticated) {
@@ -86,4 +82,5 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
+
 export default router;

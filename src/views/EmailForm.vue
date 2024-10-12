@@ -1,7 +1,7 @@
 <template>
-  <div class="email-form">
-    <h2>Send an Email with Attachment</h2>
-    <form @submit.prevent="sendEmail">
+  <div class="file-upload">
+    <h2>Send Email with Attachment</h2>
+    <form @submit.prevent="uploadFile">
       <div>
         <label for="toEmail">Recipient Email:</label>
         <input
@@ -9,9 +9,10 @@
           id="toEmail"
           v-model="toEmail"
           required
-          placeholder="Enter recipient email"
+          placeholder="Enter recipient's email"
         />
       </div>
+      
       <div>
         <label for="subject">Subject:</label>
         <input
@@ -19,9 +20,10 @@
           id="subject"
           v-model="subject"
           required
-          placeholder="Enter email subject"
+          placeholder="Enter subject"
         />
       </div>
+      
       <div>
         <label for="text">Message:</label>
         <textarea
@@ -31,150 +33,118 @@
           placeholder="Enter your message"
         ></textarea>
       </div>
+
       <div>
-        <label for="attachment">Attachment:</label>
+        <label for="file">Choose File:</label>
         <input
           type="file"
-          id="attachment"
+          id="file"
           @change="handleFileUpload"
-          :accept="allowedFileTypes"
+          accept=".pdf, .txt, .jpg, .jpeg, .png, .gif"
         />
       </div>
-      <button type="submit" :disabled="loading || !file">
-        {{ loading ? 'Sending...' : 'Send Email' }}
-      </button>
+
+      <button type="submit">Send Email</button>
     </form>
-    <div v-if="message" :class="{ success: success, error: !success }">
-      {{ message }}
-    </div>
+
+    <p v-if="responseMessage">{{ responseMessage }}</p>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
 import axios from 'axios';
 
 export default {
-  name: 'EmailForm',
-  setup() {
-    const toEmail = ref('');
-    const subject = ref('');
-    const text = ref('');
-    const file = ref(null);
-    const loading = ref(false);
-    const message = ref('');
-    const success = ref(false);
-    const allowedFileTypes = '.pdf,.txt,.jpg,.jpeg,.png,.gif';
-
-    const handleFileUpload = (event) => {
-      const selectedFile = event.target.files[0];
-      if (selectedFile) {
-        file.value = selectedFile;
-      }
+  data() {
+    return {
+      toEmail: '',
+      subject: '',
+      text: '',
+      file: null,
+      responseMessage: ''
     };
-
-    const sendEmail = async () => {
-      if (!file.value) {
-        message.value = 'Please select a file to attach.';
-        success.value = false;
+  },
+  methods: {
+    handleFileUpload(event) {
+      this.file = event.target.files[0];
+    },
+    async uploadFile() {
+      if (!this.file) {
+        this.responseMessage = 'Please select a file to upload.';
         return;
       }
 
-      loading.value = true;
-      message.value = '';
-      success.value = false;
+      const formData = new FormData();
+      formData.append('toEmail', this.toEmail);
+      formData.append('subject', this.subject);
+      formData.append('text', this.text);
+      formData.append('file', this.file);
 
       try {
-        const formData = new FormData();
-        formData.append('toEmail', toEmail.value);
-        formData.append('subject', subject.value);
-        formData.append('text', text.value);
-        formData.append('file', file.value);
-
         const response = await axios.post(
-          'https://senddynamicemail-dvj7jctgiq-uc.a.run.app',
+          'https://senddynamicemail-dvj7jctgiq-uc.a.run.app', // Replace with your Firebase function URL
           formData,
           {
             headers: {
-              'Content-Type': 'multipart/form-data',
-            },
+              'Content-Type': 'multipart/form-data'
+            }
           }
         );
 
-        message.value = response.data.message;
-        success.value = true;
-        // Clear the form fields
-        toEmail.value = '';
-        subject.value = '';
-        text.value = '';
-        file.value = null;
-        // Reset the file input
-        document.getElementById('attachment').value = '';
+        this.responseMessage = response.data.message;
       } catch (error) {
         if (error.response && error.response.data && error.response.data.error) {
-          message.value = error.response.data.error;
+          this.responseMessage = `Error: ${error.response.data.error}`;
         } else {
-          message.value = 'An unexpected error occurred.';
+          this.responseMessage = 'An error occurred while sending the email.';
         }
-        success.value = false;
-      } finally {
-        loading.value = false;
       }
-    };
-
-    return {
-      toEmail,
-      subject,
-      text,
-      file,
-      loading,
-      message,
-      success,
-      allowedFileTypes,
-      handleFileUpload,
-      sendEmail,
-    };
-  },
+    }
+  }
 };
 </script>
 
 <style scoped>
-.email-form {
-  max-width: 600px;
+.file-upload {
+  max-width: 400px;
   margin: auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f9f9f9;
 }
-
-.email-form div {
-  margin-bottom: 15px;
-}
-
-.email-form label {
+.file-upload label {
   display: block;
-  margin-bottom: 5px;
+  margin-top: 10px;
 }
-
-.email-form input,
-.email-form textarea {
+.file-upload input[type="text"],
+.file-upload input[type="email"],
+.file-upload input[type="file"],
+.file-upload textarea {
   width: 100%;
   padding: 8px;
-  box-sizing: border-box;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
-
-.email-form button {
-  padding: 10px 20px;
+.file-upload button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
-
-.success {
-  color: green;
+.file-upload button:hover {
+  background-color: #45a049;
 }
-
-.error {
-  color: red;
+.file-upload p {
+  margin-top: 10px;
+  font-weight: bold;
 }
 </style>
-
-
-
 
 
 

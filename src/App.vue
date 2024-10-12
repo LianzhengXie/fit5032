@@ -17,7 +17,7 @@
       <BHeader />
     </header>
 
-    <main>
+    <main style="padding-top: 60px;">
       <router-view></router-view>
     </main>
   </template>
