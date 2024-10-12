@@ -1,6 +1,191 @@
 <template>
   <div class="email-form">
     <h2>Send an Email with Attachment</h2>
+    <form @submit.prevent="sendEmail">
+      <div>
+        <label for="toEmail">Recipient Email:</label>
+        <input
+          type="email"
+          id="toEmail"
+          v-model="toEmail"
+          required
+          placeholder="Enter recipient email"
+        />
+      </div>
+      <div>
+        <label for="subject">Subject:</label>
+        <input
+          type="text"
+          id="subject"
+          v-model="subject"
+          required
+          placeholder="Enter email subject"
+        />
+      </div>
+      <div>
+        <label for="text">Message:</label>
+        <textarea
+          id="text"
+          v-model="text"
+          required
+          placeholder="Enter your message"
+        ></textarea>
+      </div>
+      <div>
+        <label for="attachment">Attachment:</label>
+        <input
+          type="file"
+          id="attachment"
+          @change="handleFileUpload"
+          :accept="allowedFileTypes"
+        />
+      </div>
+      <button type="submit" :disabled="loading || !file">
+        {{ loading ? 'Sending...' : 'Send Email' }}
+      </button>
+    </form>
+    <div v-if="message" :class="{ success: success, error: !success }">
+      {{ message }}
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue';
+import axios from 'axios';
+
+export default {
+  name: 'EmailForm',
+  setup() {
+    const toEmail = ref('');
+    const subject = ref('');
+    const text = ref('');
+    const file = ref(null);
+    const loading = ref(false);
+    const message = ref('');
+    const success = ref(false);
+    const allowedFileTypes = '.pdf,.txt,.jpg,.jpeg,.png,.gif';
+
+    const handleFileUpload = (event) => {
+      const selectedFile = event.target.files[0];
+      if (selectedFile) {
+        file.value = selectedFile;
+      }
+    };
+
+    const sendEmail = async () => {
+      if (!file.value) {
+        message.value = 'Please select a file to attach.';
+        success.value = false;
+        return;
+      }
+
+      loading.value = true;
+      message.value = '';
+      success.value = false;
+
+      try {
+        const formData = new FormData();
+        formData.append('toEmail', toEmail.value);
+        formData.append('subject', subject.value);
+        formData.append('text', text.value);
+        formData.append('file', file.value);
+
+        const response = await axios.post(
+          'https://senddynamicemail-dvj7jctgiq-uc.a.run.app',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+
+        message.value = response.data.message;
+        success.value = true;
+        // Clear the form fields
+        toEmail.value = '';
+        subject.value = '';
+        text.value = '';
+        file.value = null;
+        // Reset the file input
+        document.getElementById('attachment').value = '';
+      } catch (error) {
+        if (error.response && error.response.data && error.response.data.error) {
+          message.value = error.response.data.error;
+        } else {
+          message.value = 'An unexpected error occurred.';
+        }
+        success.value = false;
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    return {
+      toEmail,
+      subject,
+      text,
+      file,
+      loading,
+      message,
+      success,
+      allowedFileTypes,
+      handleFileUpload,
+      sendEmail,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.email-form {
+  max-width: 600px;
+  margin: auto;
+}
+
+.email-form div {
+  margin-bottom: 15px;
+}
+
+.email-form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.email-form input,
+.email-form textarea {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.email-form button {
+  padding: 10px 20px;
+}
+
+.success {
+  color: green;
+}
+
+.error {
+  color: red;
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+<!-- <template>
+  <div class="email-form">
+    <h2>Send an Email with Attachment</h2>
     <form @submit.prevent="handleSubmit">
       <div class="form-group">
         <label for="to">To:</label>
@@ -183,4 +368,4 @@ button:disabled {
   color: red;
   font-weight: bold;
 }
-</style>
+</style> -->

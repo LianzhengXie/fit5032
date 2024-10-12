@@ -11,6 +11,7 @@ import FirebaseRegisterView from '@/views/FirebaseRegisterView.vue';
 import { useStore } from 'vuex';
 import SendEmailView from '@/views/EmailForm.vue';
 import DataTableView from '@/views/DataTableView.vue';
+import MapView from '@/views/MapView.vue';
 
 const routes = [
   {
@@ -59,6 +60,11 @@ const routes = [
     path: '/sendemail',
     name: 'SendEmail',
     component: SendEmailView
+  },
+  {
+    path: '/mapview',
+    name: 'MapView',
+    component: MapView
   }
 ];
 

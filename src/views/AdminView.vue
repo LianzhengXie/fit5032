@@ -1,6 +1,8 @@
 <script setup>
     import { useStore } from 'vuex';
     import { useRouter } from 'vue-router';
+    import { ref } from 'vue';
+    import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
     const store = useStore();
     const router = useRouter();
@@ -8,6 +10,25 @@
     const handleLogout = () => {
     store.dispatch('logout', router); // Call the Vuex logout action
     router.push({ name: 'Login' });   // Redirect to Login page
+    };
+
+    // Firestore setup
+    const db = getFirestore();
+    const userStats = ref(null);
+
+    // Fetch the user statistics from Firestore
+    const fetchUserStats = async () => {
+    try {
+        const docRef = doc(db, 'statistics', 'user_stats');
+        const docSnapshot = await getDoc(docRef);
+        if (docSnapshot.exists()) {
+        userStats.value = docSnapshot.data();
+        } else {
+        console.log("No user stats found");
+        }
+    } catch (error) {
+        console.error("Error fetching user stats:", error);
+    }
     };
 </script>
 
@@ -24,6 +45,12 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="real-time-data">
+        <h2>User Statistics</h2>
+        <button @click="fetchUserStats">Fetch Stats</button>
+        <p v-if="userStats">Total Data Points: {{ userStats.totalDataPoints }}</p>
+        <p v-if="!userStats">No statistics available</p>
     </div>
 </template>
 

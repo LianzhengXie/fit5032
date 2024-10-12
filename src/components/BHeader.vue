@@ -46,6 +46,9 @@ const handleLogout = () => {
             <router-link to="/sendemail" class="nav-link" active-class="active">Send Email</router-link>
           </li>
           <li class="nav-item">
+            <router-link to="/mapview" class="nav-link" active-class="active">Map View</router-link>
+          </li>
+          <li class="nav-item">
             <router-link to="/datatable" class="nav-link" active-class="active">Data Table</router-link>
           </li>
           <li class="nav-item" v-if="isAuthenticated">
