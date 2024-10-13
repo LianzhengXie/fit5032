@@ -1,123 +1,57 @@
 const {onRequest} = require("firebase-functions/v2/https");
+const functions = require("firebase-functions");
 const {onDocumentCreated} = require("firebase-functions/v2/firestore");
 const {GoogleGenerativeAI} = require("@google/generative-ai");
 const sgMail = require("@sendgrid/mail");
 const cors = require("cors")({origin: true});
 const admin = require("firebase-admin");
-const Busboy = require("busboy");
-const path = require("path");
-const os = require("os");
-const fs = require("fs");
+
 
 // Initialize Firebase Admin
 admin.initializeApp();
 
 // Initialize SendGrid API key from Firebase environment variables
-const SENDGRID_API_KEY = functions.config().sendgrid.key;
-sgMail.setApiKey(SENDGRID_API_KEY);
+sgMail.setApiKey(functions.config().sendgrid.key);
 
 // Store API key securely
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(functions.config().genai.key);
 
-/**
- * Sends an email with an attachment.
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- */
-exports.sendDynamicEmail = onRequest((req, res) => {
-  cors(req, res, () => {
-    if (req.method !== "POST") {
-      return res.status(405).send({error: "Method Not Allowed"});
+exports.sendEmailWithPdf = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    if (req.method === "OPTIONS") {
+      res.set("Access-Control-Allow-Methods", "GET, POST");
+      res.set("Access-Control-Allow-Headers", "Content-Type");
+      res.set("Access-Control-Max-Age", "3600");
+      res.status(204).send("");
+      return;
     }
 
-    const busboy = Busboy({headers: req.headers}); //eslint-disable-line
-    const fields = {};
-    const uploads = {};
-    const fileWrites = [];
+    const {to, subject, text} = req.body;
 
-    // Handle file uploads
-    busboy.on("file", (fieldname, file, filename, encoding, mimetype) => {
-      console.log("Received file:", filename, "with MIME type:", mimetype);
-      const allowedMimeTypes =
-      ["application/pdf", "text/plain", "image/jpeg", "image/png", "image/gif"];
+    if (!to || !subject || !text) {
+      console.error("Missing required email fields.");
+      res.status(400).send("Missing required email fields.");
+      return;
+    }
 
-      if (!allowedMimeTypes.includes(mimetype)) {
-        return res.status(400).send({error: "Invalid file type."});
-      }
+    const msg = {
+      to,
+      from: "lianzheng0014@tutamail.com",
+      subject,
+      text,
+    };
 
-      const filepath = path.join(os.tmpdir(), filename);
-      uploads[fieldname] = {filepath, mimetype, filename};
-      const writeStream = fs.createWriteStream(filepath);
-      file.pipe(writeStream);
-
-      fileWrites.push(
-          new Promise((resolve, reject) => {
-            writeStream.on("finish", resolve);
-            writeStream.on("error", reject);
-          }),
-      );
-    });
-
-    // Handle non-file fields
-    busboy.on("field", (fieldname, val) => {
-      fields[fieldname] = val;
-    });
-
-    busboy.on("finish", async () => {
-      try {
-        await Promise.all(fileWrites);
-
-        const {toEmail, subject, text} = fields;
-        if (!toEmail || !subject || !text) {
-          return res.status(400).send({
-            error: "Recipient email, subject, and text are required.",
-          });
-        }
-
-        const uploadedFile = uploads["file"];
-        if (!uploadedFile) {
-          return res.status(400).send({error: "No file uploaded."});
-        }
-
-        const fileContent =
-        fs.readFileSync(uploadedFile.filepath).toString("base64");
-        const msg = {
-          to: toEmail,
-          from: "lianzheng0014@tutamail.com",
-          subject: subject,
-          text: text,
-          attachments: [
-            {
-              content: fileContent,
-              filename: uploadedFile.filename,
-              type: uploadedFile.mimetype,
-              disposition: "attachment",
-            },
-          ],
-        };
-
-        await sgMail.send(msg);
-
-        // Clean up temporary file
-        if (fs.existsSync(uploadedFile.filepath)) {
-          fs.unlinkSync(uploadedFile.filepath);
-        }
-
-        res.status(200).send({
-          message: "Email sent successfully.",
-        });
-      } catch (error) {
-        console.error("Error sending email:", error);
-        res.status(500).send({
-          error: "Failed to send email.",
-        });
-      }
-    });
-
-    busboy.end(req.rawBody);
+    try {
+      await sgMail.send(msg);
+      res.status(200).send({
+        message: "Email sent successfully!",
+        success: true});
+    } catch (error) {
+      console.error("Error sending email:", error);
+      res.status(500).send("Failed to send email.");
+    }
   });
 });
-
 
 exports.sendWelcomeEmail = onDocumentCreated(
     "/users/{userId}", async (event) => {

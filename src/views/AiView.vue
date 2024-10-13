@@ -1,16 +1,25 @@
 <template>
-    <div class="ai-response-container">
-      <h2>Ask the AI</h2>
-      <input v-model="prompt" placeholder="Enter your question" class="input-box" />
-      <button @click="getAIResponse" class="submit-btn">Submit</button>
-      <div v-if="response" class="response-box">
-        <h3>AI Response:</h3>
-        <p>{{ response }}</p>
-      </div>
-      <div v-if="errorMessage" class="error-box">
-        <p>{{ errorMessage }}</p>
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <h1 class="text-center">Ask the AI</h1>
+        <p class="text-center">
+          Ask the AI a question about the world around you. It's like having a personal assistant.
+        </p>
+        <input v-model="prompt" placeholder="Enter your question" class="input-box" />
+        <div class="text-center">
+          <button @click="getAIResponse" class="btn btn-primary me-2">Submit</button>
+        </div>
+        <div v-if="response" class="response-box">
+          <h3>AI Response:</h3>
+          <p>{{ response }}</p>
+        </div>
+        <div v-if="errorMessage" class="error-box">
+          <p>{{ errorMessage }}</p>
+        </div>
       </div>
     </div>
+  </div>
   </template>
   
   <script>
@@ -54,16 +63,13 @@
     padding: 10px;
     margin-top: 10px;
     margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    color: rgba(0, 0, 0, 0.5);
+
   }
   
-  .submit-btn {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-  }
-  
+
   .response-box, .error-box {
     margin-top: 20px;
     padding: 15px;

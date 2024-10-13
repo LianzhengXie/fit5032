@@ -12,6 +12,7 @@ import MapView from '@/views/MapView.vue';
 import store from '@/store'; // Import the store directly
 import SendBulkEmail from '@/views/SendBulkEmail.vue';
 import AiView from '@/views/AiView.vue';
+import NotFoundView from '@/views/NotFoundView.vue';
 
 const routes = [
   {
@@ -76,6 +77,11 @@ const routes = [
     path: '/aiview',
     name: 'AiView',
     component: AiView
+  },
+  {
+    path: '/:catchAll(.*)',
+    name: 'NotFound',
+    component: NotFoundView
   }
 ];
 

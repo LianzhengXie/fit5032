@@ -1,13 +1,33 @@
 <template>
-  <div>
-    <h2>{{ title }}</h2>
-    <input
-      type="text"
-      v-model="globalSearch"
-      placeholder="Search..."
-      class="search-box"
-    />
-    <table ref="dataTable" class="display" style="width:100%">
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <h1 class="text-center">Patient list</h1>
+        <p class="text-center">
+          Patient lists support sorting, searching, and paging (10 lines per page) to export data.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="table-container">
+    <div class="col-md-8 offset-md-2">
+      <input
+        type="text"
+        v-model="globalSearch"
+        placeholder="Search..."
+        class="form-control"
+      />
+      <div class="pagination-options">
+        <label for="itemsPerPage">Rows per page:</label>
+        <select v-model="itemsPerPage" @change="filterData">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+        </select>
+      </div>
+    </div>
+    
+    <table ref="dataTable" class="data-table">
       <thead>
         <tr>
           <th v-for="column in columns" :key="column" @click="sortBy(column)">
@@ -24,7 +44,7 @@
               v-model="columnSearch[index]"
               @input="filterColumn(index)"
               placeholder="Search {{ column }}"
-              class="column-search"
+              class="form-control"
             />
           </th>
         </tr>
@@ -163,7 +183,13 @@ export default {
 </script>
 
 <style scoped>
-table {
+.table-container {
+  width: 80%;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+.data-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 1em;
@@ -176,10 +202,7 @@ th, td {
 th {
   cursor: pointer;
 }
-.search-box, .column-search {
-  margin: 0.5em;
-  padding: 0.3em;
-}
+
 .pagination {
   text-align: center;
 }
@@ -189,6 +212,5 @@ th {
 }
 .export-buttons {
   margin-top: 1em;
-  text-align: center;
 }
 </style>

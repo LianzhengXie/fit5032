@@ -21,15 +21,21 @@
             v-model="startLocation" 
             placeholder="Enter Starting Point"
             type="text"
-            class="form-control mb-2"
+            class="form-control"
           />
           <input 
             v-model="endLocation" 
             placeholder="Enter Destination" 
             type="text"
-            class="form-control mb-2"
+            class="form-control"
           />
-          <button type="button" class="btn btn-primary" @click="getDirections">Get Directions</button>
+          <button 
+            type="button" 
+            class="btn btn-primary" 
+            @click="getDirections" 
+            style="height: 100%; border-radius: 0;">
+            Get Directions
+          </button>
         </div>
 
         <!-- Travel Details -->
@@ -86,23 +92,33 @@ export default {
     searchPOI() {
       const request = {
         query: this.searchQuery,
-        fields: ['name', 'geometry'],
+        fields: ['name', 'geometry', 'formatted_address'],
       };
       const service = new google.maps.places.PlacesService(this.map);
 
-      // Clear any existing markers
+      // clear previous markers
       this.clearMarkers();
 
       service.textSearch(request, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
           this.map.setCenter(results[0].geometry.location);
+          
           results.forEach((place) => {
             const marker = new google.maps.Marker({
               position: place.geometry.location,
               map: this.map,
               title: place.name,
             });
-            this.markers.push(marker);  // Store marker for later removal
+            this.markers.push(marker);  // save markers for future use
+            
+            // add info window to each marker
+            const infoWindow = new google.maps.InfoWindow({
+              content: `<div><strong>${place.name}</strong><br>${place.formatted_address}</div>`,
+            });
+            
+            marker.addListener('click', () => {
+              infoWindow.open(this.map, marker);
+            });
           });
         } else {
           console.error('Error finding places:', status);
@@ -146,8 +162,44 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  font-family: Arial, sans-serif;
+  max-width: 80%;
+  margin: auto;
+  padding: 20px;
+}
+.input-group {
+  margin-top: 15px;
+}
 .map-container {
-  height: 400px;
+  height: 500px;
   width: 100%;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+}
+.btn {
+  font-weight: bold;
+  margin-left: 5px;
+}
+.btn-secondary {
+  background-color: #007BFF;
+  border-color: #007BFF;
+}
+.btn-secondary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+.text-center {
+  font-size: 1.2em;
+  margin-top: 20px;
+}
+@media (max-width: 768px) {
+  .container {
+    width: 100%;
+  }
+  .map-container {
+    height: 300px;
+  }
 }
 </style>
+
