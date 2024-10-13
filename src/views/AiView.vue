@@ -6,8 +6,8 @@
         <p class="text-center">
           Ask the AI a question about the world around you. It's like having a personal assistant.
         </p>
-        <input v-model="prompt" placeholder="Enter your question" class="input-box" />
-        <div class="text-center">
+        <input v-model="prompt" placeholder="Enter your question" class="form-control row mb-3" />
+        <div class="text-center ">
           <button @click="getAIResponse" class="btn btn-primary me-2">Submit</button>
         </div>
         <div v-if="response" class="response-box">
@@ -57,18 +57,7 @@
     padding: 20px;
     text-align: center;
   }
-  
-  .input-box {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    color: rgba(0, 0, 0, 0.5);
 
-  }
-  
 
   .response-box, .error-box {
     margin-top: 20px;
