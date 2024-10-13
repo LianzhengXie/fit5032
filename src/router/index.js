@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import AboutView from '../views/AboutView.vue';
 import AccessDeniedView from '../views/AccessDeniedView.vue';
+import AdminView from '../views/AdminView.vue';
 import RatingView from '../views/RatingView.vue';
 import FirebaseSigninView from '@/views/FirebaseSigninView.vue';
 import FirebaseRegisterView from '@/views/FirebaseRegisterView.vue';
@@ -9,6 +10,8 @@ import SendEmailView from '@/views/EmailForm.vue';
 import DataTableView from '@/views/DataTableView.vue';
 import MapView from '@/views/MapView.vue';
 import store from '@/store'; // Import the store directly
+import SendBulkEmail from '@/views/SendBulkEmail.vue';
+import AiView from '@/views/AiView.vue';
 
 const routes = [
   {
@@ -44,7 +47,7 @@ const routes = [
   {
     path: '/admin',
     name: 'Admin',
-    component: () => import('../views/AdminView.vue'),
+    component: AdminView,
     meta: { requiresAuth: true, role: 'admin' }
   },
   {
@@ -59,9 +62,20 @@ const routes = [
     component: SendEmailView
   },
   {
+    path: '/sendbulkbmail',
+    name: 'SendBulkEmail',
+    component: SendBulkEmail,
+    meta: { requiresAuth: true, role: 'admin' }
+  },
+  {
     path: '/mapview',
     name: 'MapView',
     component: MapView
+  },
+  {
+    path: '/aiview',
+    name: 'AiView',
+    component: AiView
   }
 ];
 

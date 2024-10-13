@@ -1,14 +1,13 @@
 const {onRequest} = require("firebase-functions/v2/https");
+const {onDocumentCreated} = require("firebase-functions/v2/firestore");
+const {GoogleGenerativeAI} = require("@google/generative-ai");
 const sgMail = require("@sendgrid/mail");
 const cors = require("cors")({origin: true});
 const admin = require("firebase-admin");
 const Busboy = require("busboy");
-const {onDocumentCreated} = require("firebase-functions/v2/firestore");
 const path = require("path");
 const os = require("os");
 const fs = require("fs");
-const functions = require('firebase-functions');
-
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -16,6 +15,9 @@ admin.initializeApp();
 // Initialize SendGrid API key from Firebase environment variables
 const SENDGRID_API_KEY = functions.config().sendgrid.key;
 sgMail.setApiKey(SENDGRID_API_KEY);
+
+// Store API key securely
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 /**
  * Sends an email with an attachment.
@@ -117,7 +119,6 @@ exports.sendDynamicEmail = onRequest((req, res) => {
 });
 
 
-
 exports.sendWelcomeEmail = onDocumentCreated(
     "/users/{userId}", async (event) => {
       const user = event.data.data(); // Accesses document data
@@ -142,21 +143,69 @@ exports.sendWelcomeEmail = onDocumentCreated(
       return sgMail.send(msg)
           .then(() => console.log(`Welcome email sent to ${email}`))
           .catch((error) => console.error("Error sending email:", error));
+    });
+
+exports.sendBulkEmails = onRequest((req, res) => {
+  cors(req, res, async () => {
+    if (req.method === "OPTIONS") {
+      // Send response to OPTIONS requests
+      res.set("Access-Control-Allow-Methods", "GET, POST");
+      res.set("Access-Control-Allow-Headers", "Content-Type");
+      res.set("Access-Control-Max-Age", "3600");
+      res.status(204).send("");
+      return;
+    }
+
+    const {emails, subject, text} = req.body;
+
+    if (!emails || emails.length === 0) {
+      console.error("No recipient emails provided.");
+      res.status(400).send("No recipient emails provided.");
+      return;
+    }
+
+    const msg = {
+      to: emails,
+      from: "lianzheng0014@tutamail.com",
+      subject,
+      text,
+    };
+
+    try {
+      await sgMail.sendMultiple(msg);
+      res.status(200).send("Bulk emails sent successfully!");
+    } catch (error) {
+      console.error("Error sending bulk emails:", error);
+      res.status(500).send("Failed to send emails.");
+    }
+  });
 });
 
-exports.sendBulkEmails = onRequest(async (req, res) => {
 
-  const msg = {
-    to: [],
-    from: "lianzheng0014@tutamail.com",
-    subject: subject,
-    text: text,
-  };
-  try {
-    await sgMail.sendMultiple(msg);
-    res.status(200).send("Bulk emails sent successfully!");
-  } catch (error) {
-    console.error("Error sending bulk emails:", error);
-    res.status(500).send("Failed to send emails.");
-  }
+// create Firebase Cloud Function
+exports.generateAIResponse = onRequest((req, res) => {
+  cors(req, res, async () => {
+    if (req.method === "OPTIONS") {
+      res.set("Access-Control-Allow-Origin", "*");
+      res.set("Access-Control-Allow-Methods", "GET, POST");
+      res.set("Access-Control-Allow-Headers", "Content-Type");
+      res.set("Access-Control-Max-Age", "3600");
+      return res.status(204).send("");
+    }
+
+    if (req.method !== "POST") {
+      return res.status(405).send({error: "Method Not Allowed"});
+    }
+
+    try {
+      const {prompt} = req.body;
+      const model = genAI.getGenerativeModel({model: "gemini-1.5-flash"});
+      const result = await model.generateContent([prompt]);
+      res.set("Access-Control-Allow-Origin", "*");
+      return res.status(200).send({response: result.response.text()});
+    } catch (error) {
+      console.error("Error generating AI response:", error);
+      res.status(500).send({error: "Failed to generate response"});
+    }
+  });
 });

@@ -51,6 +51,9 @@ const handleLogout = () => {
           <li class="nav-item">
             <router-link to="/datatable" class="nav-link" active-class="active">Data Table</router-link>
           </li>
+          <li class="nav-item">
+            <router-link to="/aiview" class="nav-link" active-class="active">ai</router-link>
+          </li>
           <li class="nav-item" v-if="isAuthenticated">
             <button @click="handleLogout" class="nav-link btn btn-link">
               <i class="fas fa-sign-out-alt"></i>Logout</button>
